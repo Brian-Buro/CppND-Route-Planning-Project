@@ -27,6 +27,23 @@ static std::optional<std::vector<std::byte>> ReadFile(const std::string &path)
     return std::move(contents);
 }
 
+std::vector<float> GetUserInput(){
+    std::vector<float> point;
+    float value;
+    
+    while (point.size() < 2 && std::cin >> value){
+        point.push_back(value);
+    }
+    for (float value: point){
+        if (value < 0 || value > 100){
+            std::cout << "The value: " << value << " is not between 0 and 100.\nReenter the x and y coordinate: ";
+            point = GetUserInput();
+        }
+    }
+    return point;
+}
+
+
 int main(int argc, const char **argv)
 {    
     std::string osm_data_file = "";
@@ -55,17 +72,16 @@ int main(int argc, const char **argv)
     // TODO 1: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
     // user input for these values using std::cin. Pass the user input to the
     // RoutePlanner object below in place of 10, 10, 90, 90.
-	float start_x, start_y, end_x, end_y;
-  	std::cout << "Enter the x and y values for the start coordinates (eg. 10 10): ";
-    std::cin >> start_x >> start_y;
-  	std::cout << "Enter the x and y values for the end coordinates (eg. 90 90): ";
-  	std::cin >> end_x >> end_y;
-  
+  	std::cout << "Enter the x and y coordinate for the start point (eg. 10 10): ";
+    std::vector<float> startPoint = GetUserInput();
+  	std::cout << "Enter the x and y coordinate for the end point (eg. 90 90): ";
+    std::vector<float> endPoint = GetUserInput();
+
     // Build Model.
     RouteModel model{osm_data};
 
     // Create RoutePlanner object and perform A* search.
-    RoutePlanner route_planner{model, start_x, start_y, end_x, end_y};
+    RoutePlanner route_planner{model, startPoint[0], startPoint[1], endPoint[0], endPoint[1]};
     route_planner.AStarSearch();
 
     std::cout << "Distance: " << route_planner.GetDistance() << " meters. \n";
